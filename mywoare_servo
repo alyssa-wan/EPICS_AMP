@@ -1,0 +1,66 @@
+#include <Servo.h> 
+
+Servo myservo1;   //initialize servo
+long array[3] = {0,0,0};
+float filtered_value = 0; //the filtered value from the myoware sensor
+float alpha = 0.2;
+
+// Servo myservo2;
+// Servo myservo3;
+// Servo myservo4;
+// Servo myservo5;
+const int threshValue = 80;  //constant threshold value
+void setup() 
+{ 
+  myservo1.attach(3);  //port servo is attatched to
+  Serial.begin(115200);
+  // myservo2.attach(5);
+  // myservo3.attach(6);
+  // myservo4.attach(9);
+  // myservo5.attach(10);
+} 
+
+void loop() 
+{ 
+  int value = analogRead(A3);  //voltage from EMG reader multiplied by 100
+  filtered_value = alpha * value + (1 - alpha) * filtered_value;
+  
+  //Calculates average voltage for EMG signal
+  for (int i = 0; i<3; i++)
+  {
+    if (i==2)
+    {
+      array[i] = filtered_value;
+    }
+    else
+    {
+      array[i] = array[i+1];
+    }
+  }
+  long average = 0;
+  for (int j =0; j<3; j++)
+  {
+    average += array[j];
+  }
+  average = average/3;
+  //Serial.print(value);
+  Serial.print(average);  //prints the average value
+  Serial.print("\n");
+  if(average < threshValue)        
+  { 
+            myservo1.write(0);   //turns servo to resting position
+            // myservo2.write(0);
+            // myservo3.write(0);
+            // myservo4.write(0);
+            // myservo5.write(0);  
+  }
+  else 
+  { 
+            myservo1.write(180);   //turns servo 180 degrees to flexed position
+            // myservo2.write(180);
+            // myservo3.write(180);
+            // myservo4.write(180);
+            // myservo5.write(180);
+  } 
+  delay(500);
+}
