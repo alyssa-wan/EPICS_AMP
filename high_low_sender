@@ -1,7 +1,4 @@
-#include <Servo.h>
-
-Servo myservo1;
-const int threshValue = 900;
+const int threshValue = 30;
 
 void setup()
 {
