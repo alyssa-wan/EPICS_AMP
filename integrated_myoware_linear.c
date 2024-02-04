@@ -1,4 +1,4 @@
-#define WRITS_PIN 3
+#define WRIST_PIN 3
 #define PINKY_PIN 5
 #define RING_PIN 6
 #define MIDDLE_PIN 9
