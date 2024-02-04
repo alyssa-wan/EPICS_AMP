@@ -2,12 +2,13 @@
 
 Servo myservo;  // Create a servo object
 
-void setup() {
+void setup()
+{
   myservo.attach(9);  // Attaches the servo on pin 9
-  int emg_data[79] = {4, 4, 4, 4, 4, 4, 4, 8, 24, 33, 4, 4, 4, 5, 31, 11, 19, 4, 4, 4, 49, 7, 4, 4, 10, 117, 5, 4, 33, 5, 4, 4, 4, 4, 4, 4, 16, 5, 5, 4, 4, 28, 37, 6, 4, 4, 4, 4, 16, 29, 27, 14, 6, 24, 9, 6, 5, 6, 92, 103, 65, 115, 164, 121, 108, 39, 57, 51, 95, 85, 8, 6, 5, 4, 4, 4};
 }
 
-void loop() {
+void loop()
+{
   myservo.write(0);  // Move the servo to 0 degrees
   delay(1000);      // Wait for 1 second
   myservo.write(90); // Move the servo to 90 degrees
