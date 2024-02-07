@@ -1,7 +1,7 @@
 const int pwmPin = 9; // PWM pin connected to the driver
-const int actuatorUpPWM = 180; // PWM value for moving up
-const int actuatorDownPWM = 0; // PWM value for moving down
-const long duration = 2000; // Duration for each movement in milliseconds
+const int actuatorUpPWM = 220; // PWM value for moving up
+const int actuatorDownPWM = 120; // PWM value for moving down
+const long duration = 1000; // Duration for each movement in milliseconds
 
 void setup()
 {
