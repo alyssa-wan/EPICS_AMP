@@ -1,8 +1,8 @@
 #include <Servo.h>
 
 Servo myservo;
-const int threshValue = 80; // Required threshold to turn servo
-const int servoPin = 3; // Pin attachment of the servo
+const int threshValue = 30; // Required threshold to turn servo
+const int servoPin = 9; // Pin attachment of the servo
 const int sensorPin = A3; // Analog pin connected to the sensor
 const int windowSize = 500; // Size of the trigger window
 int triggerWindow[windowSize];
@@ -29,12 +29,14 @@ void loop() {
   }
   
   int trigger = sum / windowSize;
-  
+  Serial.println(trigger) ;
+
+
   if (trigger > threshValue) {
     myservo.write(180); // Turns servo to flexed position
   } else {
     myservo.write(0); // Turns servo back to rest position
   }
   
-  delay(300); // Delay in between reads for stability
+  //delay(300); // Delay in between reads for stability
 }
