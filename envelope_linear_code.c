@@ -1,24 +1,27 @@
-const int pwmPin = 9; // PWM pin connected to the driver
+#include <stdio.h>
+
+const int threshValue = 7.5; // Required threshold to turn servo
 const int actuatorUpPWM = 220; // PWM value for moving up
 const int actuatorDownPWM = 120; // PWM value for moving down
-const long duration = 500; // Duration for each movement in milliseconds
-const int myowarePin = A0;
-const int threshValue = 80;
-const int windowSize = 500; // Size of the trigger window
+const int sensorPin = A0; // Analog pin connected to the sensor
+const int windowSize = 100; // Size of the trigger window
+const int pwmPin = 9;
+
 int triggerWindow[windowSize];
 int windowIndex = 0;
 
 void setup() {
-  pinMode(pwmPin, OUTPUT);
+  pinMode (pwmPin, OUTPUT); // Attaching servo to pin
   Serial.begin(9600); // Start serial communication
 }
 
 void loop() {
-  int sensorValue = analogRead(myowarePin); // Read the input on analog pin A0
+  int sensorValue = analogRead(sensorPin); // Read the input on analog pin A3
   
   if (sensorValue < 0) {
-    sensorValue = -sensorValue;
+    sensorValue = abs(sensorValue);
   }
+
   
   triggerWindow[windowIndex] = sensorValue;
   windowIndex = (windowIndex + 1) % windowSize;
@@ -29,7 +32,9 @@ void loop() {
   }
   
   int trigger = sum / windowSize;
-  
+  Serial.println(trigger) ;
+
+
   if (trigger > threshValue)
   {
     analogWrite(pwmPin, actuatorUpPWM);
@@ -37,7 +42,7 @@ void loop() {
   else
   {
     analogWrite(pwmPin, actuatorDownPWM);
-  }
+  }  
   
-  delay(300); // Delay in between reads for stability
+  //delay(10); // Delay in between reads for stability
 }
