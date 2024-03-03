@@ -1,10 +1,11 @@
 #include <Servo.h>
+#include <stdio.h>
 
 Servo myservo;
-const int threshValue = 30; // Required threshold to turn servo
+const int threshValue = 10; // Required threshold to turn servo
 const int servoPin = 9; // Pin attachment of the servo
-const int sensorPin = A3; // Analog pin connected to the sensor
-const int windowSize = 500; // Size of the trigger window
+const int sensorPin = A0; // Analog pin connected to the sensor
+const int windowSize = 100; // Size of the trigger window
 int triggerWindow[windowSize];
 int windowIndex = 0;
 
@@ -17,8 +18,9 @@ void loop() {
   int sensorValue = analogRead(sensorPin); // Read the input on analog pin A3
   
   if (sensorValue < 0) {
-    sensorValue = -sensorValue;
+    sensorValue = abs(sensorValue);
   }
+
   
   triggerWindow[windowIndex] = sensorValue;
   windowIndex = (windowIndex + 1) % windowSize;
@@ -38,5 +40,5 @@ void loop() {
     myservo.write(0); // Turns servo back to rest position
   }
   
-  delay(300); // Delay in between reads for stability
+  //delay(10); // Delay in between reads for stability
 }
