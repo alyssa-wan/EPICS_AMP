@@ -199,25 +199,12 @@ void loop()
   curr_duty_cycle = ((curr_step - 0) * (0.1 - 0.05) / (5 - 0) + 0.05)*100;
   Serial.print(F("Using PWM Freq = ")); Serial.print(PWM_Freq1); Serial.print(F(", PWM DutyCycle = ")); Serial.println(PWM_DutyCycle1);
 
-#if USING_PWM_FREQUENCY
-
   // You can use this with PWM_Freq in Hz
   channelNum = ISR_PWM.setPWM(PWM_Pin, PWM_Freq1, curr_duty_cycle);
 
-#else
-#if USING_MICROS_RESOLUTION
-  // Or using period in microsecs resolution
-  channelNum = ISR_PWM.setPWM_Period(PWM_Pin, PWM_Period1, curr_duty_cycle);
-#else
-  // Or using period in millisecs resolution
-  channelNum = ISR_PWM.setPWM_Period(PWM_Pin, PWM_Period1 / 1000.0, curr_duty_cycle);
-#endif
-#endif
-
   delay(1000);
   Serial.println(curr_duty_cycle);
-
   ISR_PWM.deleteChannel((unsigned) channelNum);
-  temp_int_float = (int)(1 + temp_int_float) % NUM_STEPS;
-  curr_step = temp_int_float;
+  
+  curr_step = (1+curr_step) % NUM_STEPS;
 }
