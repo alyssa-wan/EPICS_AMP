@@ -18,6 +18,7 @@
   Therefore, their executions are not blocked by bad-behaving functions / tasks.
   This important feature is absolutely necessary for mission-critical tasks.
 *****************************************************************************************************************************/
+// TODO: we can probably delete the above we're changing it enough
 
 #if ( defined(__AVR_ATmega644__) || defined(__AVR_ATmega644A__) || defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__)  || \
         defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO) || defined(ARDUINO_AVR_MINI) ||    defined(ARDUINO_AVR_ETHERNET) || \
@@ -25,6 +26,8 @@
         defined(ARDUINO_AVR_NG) || defined(ARDUINO_AVR_UNO_WIFI_DEV_ED) || defined(ARDUINO_AVR_DUEMILANOVE) || defined(ARDUINO_AVR_FEATHER328P) || \
         defined(ARDUINO_AVR_METRO) || defined(ARDUINO_AVR_PROTRINKET5) || defined(ARDUINO_AVR_PROTRINKET3) || defined(ARDUINO_AVR_PROTRINKET5FTDI) || \
         defined(ARDUINO_AVR_PROTRINKET3FTDI) )
+
+  // TODO: this is timer used so we can take out the if statement here
   #define USE_TIMER_1     true
 #else          
   #define USE_TIMER_3     true
@@ -37,13 +40,15 @@
 
 #if (_PWM_LOGLEVEL_ > 3)
   #if USE_TIMER_1
+  // TODO: we are only using timer 1 according to the if statement that chooses which timer
     #warning Using Timer1
+    
   #elif USE_TIMER_1
     #warning Using Timer3
   #endif
 #endif
 
-#define USING_MICROS_RESOLUTION       true    //false
+#define USING_MICROS_RESOLUTION       true    //false 
 
 // Default is true, uncomment to false
 //#define CHANGING_PWM_END_OF_CYCLE     false
@@ -51,20 +56,7 @@
 // To be included only in main(), .ino with setup() to avoid `Multiple Definitions` Linker Error
 #include "AVR_Slow_PWM.h"
 
-#define LED_OFF             HIGH
-#define LED_ON              LOW
 
-#ifndef LED_BUILTIN
-  #define LED_BUILTIN       13
-#endif
-
-#ifndef LED_BLUE
-  #define LED_BLUE          10
-#endif
-
-#ifndef LED_RED
-  #define LED_RED           11
-#endif
 
 // Don't change these numbers to make higher Timer freq. System can hang
 #define HW_TIMER_INTERVAL_MS        0.1f
@@ -89,7 +81,14 @@ void TimerHandler()
 //////////////////////////////////////////////////////
 
 // You can assign pins here. Be carefull to select good pin to use or crash
-uint32_t PWM_Pin    = 10;
+#define THUMB      3
+#define INDEX      5
+#define MIDDLE     9
+//#define RING       10
+//#define PINKY      11 
+
+uint32_t PWM_Pin[]       = { THUMB, INDEX, MIDDLE }; // add PINKY if pin 11 works
+#define NUM_OF_PINS     3
 
 // You can assign any interval for any timer here, in Hz
 float PWM_Freq1   = 50.0f;
@@ -129,7 +128,7 @@ void setup()
 
 #if USING_HW_TIMER_INTERVAL_MS
 
-#if USE_TIMER_1
+#if USE_TIMER_1 // TODO: we are using timer 1 according to the board picked if statement at the beginning?
 
   ITimer1.init();
 
@@ -157,7 +156,7 @@ void setup()
 =
 #else
 
-#if USE_TIMER_1
+#if USE_TIMER_1 // TODO: we are using timer 1 according to the board picked if statement at the beginning?
 
   ITimer1.init();
 
@@ -180,44 +179,50 @@ void setup()
   }
   else
     Serial.println(F("Can't set ITimer3. Select another freq. or timer"));
-
+ 
 #endif
 
 #endif
 }
+// TODO: Which of these do we want to keep
+//#define ACTU_PWM_FREQ          63000.0f    // in hertz
+//#define ACTU_PWM_PERIOD        1 / ACTU_PWM_FREQ
 
+//#define RETRACTED_PULSE        2.0f
+//#define EXTENDED_PULSE         1.0f
 
+//#define RETRACTED_DUTY         RETRACTED_PULSE / ACTU_PWM_PERIOD   // max_duty
+//#define EXTENDED_DUTY          EXTENDED_PULSE / ACTU_PWM_PERIOD    // min_duty
 
-float curr_duty_cycle=5.0f;
-int curr_step=0;
+//#define MIN_STEP_SIZE          (1.0 / 50.0)f
+//#define NUM_STEPS              50
+
+float curr_duty_cycle=5.0f; 
+int curr_step=0; 
 float temp_int_float=0.0f;
+
 #define NUM_STEPS 5
 
 void loop()
 {
-
-  curr_duty_cycle = ((curr_step - 0) * (0.1 - 0.05) / (5 - 0) + 0.05)*100;
+    // TODO: weird things about this math: curr_step is an int so it might mess with stuff, we should put in our defines for this statement so we know what each thing is
+  curr_duty_cycle = ((curr_step - 0.0) * (0.1 - 0.05) / (5 - 0) + 0.05)*100;
   Serial.print(F("Using PWM Freq = ")); Serial.print(PWM_Freq1); Serial.print(F(", PWM DutyCycle = ")); Serial.println(PWM_DutyCycle1);
 
-#if USING_PWM_FREQUENCY
+  for (int i = 0; i < NUM_OF_PINS; i++) { 
+    // You can use this with PWM_Freq in Hz
+    channelNum = ISR_PWM.setPWM(PWM_Pin[i], PWM_Freq1, curr_duty_cycle);
 
-  // You can use this with PWM_Freq in Hz
-  channelNum = ISR_PWM.setPWM(PWM_Pin, PWM_Freq1, curr_duty_cycle);
+    delay(50);
+    Serial.println(curr_duty_cycle);
 
-#else
-#if USING_MICROS_RESOLUTION
-  // Or using period in microsecs resolution
-  channelNum = ISR_PWM.setPWM_Period(PWM_Pin, PWM_Period1, curr_duty_cycle);
-#else
-  // Or using period in millisecs resolution
-  channelNum = ISR_PWM.setPWM_Period(PWM_Pin, PWM_Period1 / 1000.0, curr_duty_cycle);
-#endif
-#endif
+   ISR_PWM.deleteChannel((unsigned) channelNum);
+    }
 
-  delay(1000);
-  Serial.println(curr_duty_cycle);
+  // TODO: this is a wee bit messy the below statement would do the samething, we had it like this when we had curr_step being a float and now its an int so the mod should be fine
+  // this one is the one I like:
+  curr_step = (1 + curr_step) % NUM_STEPS;
 
-  ISR_PWM.deleteChannel((unsigned) channelNum);
-  temp_int_float = (int)(1 + temp_int_float) % NUM_STEPS;
-  curr_step = temp_int_float;
+   //temp_int_float = (int)(1 + temp_int_float) % NUM_STEPS;
+   //curr_step = temp_int_float;
 }
