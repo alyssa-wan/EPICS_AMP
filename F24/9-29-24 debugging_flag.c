@@ -2,6 +2,7 @@
 #include <MsTimer2.h>
 
 // TODO: create debugging flag to activate and deactivate serial
+#define SERIAL_DEBUGGING        true // false to turn off serial debugging flags
 
 #if ( defined(__AVR_ATmega644__) || defined(__AVR_ATmega644A__) || defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__)  || \
         defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO) || defined(ARDUINO_AVR_MINI) ||    defined(ARDUINO_AVR_ETHERNET) || \
@@ -109,7 +110,9 @@ int trigger;
 void readSensor()
 {
   int sensorValue = analogRead(myowarePin); // Read the MyoWare sensor value
-  Serial.println(sensorValue); // Debugging: Print the sensor value
+  if (SERIAL_DEBUGGING) {
+    Serial.println(sensorValue); // Debugging: Print the sensor value
+  }
 
     if (sensorValue < 0) {
     sensorValue = abs(sensorValue);
@@ -125,24 +128,28 @@ void readSensor()
   }
   
   int trigger = sum / windowSize;
+  if (SERIAL_DEBUGGING) {
   Serial.println(trigger) ;
-
+  }
 }
 
 
 void setup()
 {
-  Serial.begin(115200);
+  if (SERIAL_DEBUGGING) {
+    Serial.begin(115200);
+  }
   while (!Serial);
 
   delay(2000);
 
   MsTimer2::set(10, readSensor); // 500ms period
   MsTimer2::start();
-
-  Serial.print(F("\nStarting ISR_Changing_PWM on ")); Serial.println(BOARD_NAME);
+  if (SERIAL_DEBUGGING) {
+    Serial.print(F("\nStarting ISR_Changing_PWM on ")); Serial.println(BOARD_NAME);
     Serial.println(AVR_SLOW_PWM_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+    Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+  }
 
   // Timer0 is used for micros(), millis(), delay(), etc and can't be used
   // Select Timer 1-2 for UNO, 1-5 for MEGA, 1,3,4 for 16u4/32u4
@@ -159,10 +166,16 @@ void setup()
 
   if (ITimer1.attachInterruptInterval(HW_TIMER_INTERVAL_MS, TimerHandler))
   {
-    Serial.print(F("Starting  ITimer1 OK, micros() = ")); Serial.println(micros());
+    if (SERIAL_DEBUGGING) {
+     Serial.print(F("Starting  ITimer1 OK, micros() = ")); Serial.println(micros());
+    }
   }
-  else
-    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+  else {
+    if (SERIAL_DEBUGGING) {
+      Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+   }
+  }
+
     
 #elif USE_TIMER_3
 
@@ -170,10 +183,15 @@ void setup()
 
   if (ITimer3.attachInterruptInterval(HW_TIMER_INTERVAL_MS, TimerHandler))
   {
-    Serial.print(F("Starting  ITimer3 OK, micros() = ")); Serial.println(micros());
+    if (SERIAL_DEBUGGING) {
+      Serial.print(F("Starting  ITimer3 OK, micros() = ")); Serial.println(micros());
+    }
   }
-  else
-    Serial.println(F("Can't set ITimer3. Select another freq. or timer"));
+  else {
+    if (SERIAL_DEBUGGING) {
+      Serial.println(F("Can't set ITimer3. Select another freq. or timer"));
+    }
+  }
 
 #endif
 =
@@ -187,10 +205,15 @@ void setup()
 
   if (ITimer1.attachInterrupt(HW_TIMER_INTERVAL_FREQ, TimerHandler))
   {
-    Serial.print(F("Starting  ITimer1 OK, micros() = ")); Serial.println(micros());
+    if (SERIAL_DEBUGGING) {
+      Serial.print(F("Starting  ITimer1 OK, micros() = ")); Serial.println(micros());
+    }
   }
-  else
-    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+  else {
+    if (SERIAL_DEBUGGING) {
+      Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
+    }
+  } 
     
 #elif USE_TIMER_3
 
@@ -198,11 +221,15 @@ void setup()
 
   if (ITimer3.attachInterrupt(HW_TIMER_INTERVAL_FREQ, TimerHandler))
   {
-    Serial.print(F("Starting  ITimer3 OK, micros() = ")); Serial.println(micros());
+    if (SERIAL_DEBUGGING) {
+      Serial.print(F("Starting  ITimer3 OK, micros() = ")); Serial.println(micros());
+    }
   }
-  else
-    Serial.println(F("Can't set ITimer3. Select another freq. or timer"));
- 
+  else {
+    if (SERIAL_DEBUGGING) {
+      Serial.println(F("Can't set ITimer3. Select another freq. or timer"));
+    }
+  }
 #endif
 
 #endif
@@ -233,7 +260,9 @@ void loop()
   //curr_duty_cycle = ((curr_step - 0.0) * (0.1 - 0.05) / (5 - 0) + 0.05)*100;
   // TODO: check if curr_duty_cycle is correct & check to see if changing delete worked one at a time
   curr_duty_cycle = mapf(curr_step, 0, NUM_STEPS, EXTENDED_DUTY, RETRACTED_DUTY) * 100;
-  Serial.print(F("Using PWM Freq = ")); Serial.print(PWM_Freq1); Serial.print(F(", PWM DutyCycle = ")); Serial.println(PWM_DutyCycle1);
+  if (SERIAL_DEBUGGING) {
+    Serial.print(F("Using PWM Freq = ")); Serial.print(PWM_Freq1); Serial.print(F(", PWM DutyCycle = ")); Serial.println(PWM_DutyCycle1);
+  }
 
   for (int i = 0; i < NUM_OF_PINS; i++) 
   { 
@@ -242,7 +271,9 @@ void loop()
     channelNum[i] = ISR_PWM.setPWM(PWM_Pin[i], PWM_Freq1, curr_duty_cycle);
 
     delay(50);
-    Serial.println(curr_duty_cycle);
+    if (SERIAL_DEBUGGING) {
+      Serial.println(curr_duty_cycle);
+    }
   
     ISR_PWM.deleteChannel((unsigned) channelNum[i]);
   }
