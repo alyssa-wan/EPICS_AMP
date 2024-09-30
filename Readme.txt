@@ -7,6 +7,10 @@ State (Finished/Unfinished - Works/Doesn'tWork - InUse/NotInUse/PieceOfLarger)
 Libraries used
 Purpose & Funtion
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Fall 2024 Files:
+
 first_reading 9-15-24.cpp  -   9-15-14
     Finished - Works - PieceOfLarger
     MsTimer2.h
@@ -22,7 +26,7 @@ actuator_test.c   -
 
 9-25-24 cleanup   -   9-25-24
     InProgress - Untested - InUse
-    <MsTimer2.h>, "AVR_Slow_PWM.h"
+    <MsTimer2.h>, "AVR_Slow_PWM.h", "Mapf.h"
     This is very similar to AMP 9-15-24 Actu&Start Read.c but it fixes some things such as making sure
         all variables from it's predecessor files (first_reading 9-15 & AMP 9-8 actuating) were copied over 
         so that it might function, a few other things were changed for readibility and prep for combining sensing 
@@ -39,6 +43,13 @@ AMP 9-8-24 Actuating.c F24  -  9-8-24
     "AVR_Slow_PWM.h"
     This is the working code for making the actuators move using interupts. It does not involve reading from the sensors, 
         it merely adjusts them in a cycle.
+
+9-29-24 debugging_flag.c  -  9-29-24
+    InProgress - Untested - PieceOfLarger
+    <MsTimer2.h>, "AVR_Slow_PWM.h", "Mapf.h"
+    This is basically the cleanup code, but with the added function of being able to turn the debugging flags
+        on and off
+
 
 
 
