@@ -1,0 +1,22 @@
+#define  selectionbit0  4
+#define  selectionbit1  7
+#define  selectionbit2  8
+#define  enbit          2
+
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(selectionbit0, OUTPUT);
+  pinMode(selectionbit1, OUTPUT);
+  pinMode(selectionbit2, OUTPUT);
+  pinMode(enbit, OUTPUT);
+
+  digitalWrite(selectionbit0, LOW);
+  digitalWrite(selectionbit1, LOW);
+  digitalWrite(selectionbit2, LOW);
+  digitalWrite(enbit, HIGH);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+}

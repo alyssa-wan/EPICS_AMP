@@ -64,7 +64,7 @@ void TimerHandler()
 
 // You can assign pins here. Be carefull to select good pin to use or crash
 #define THUMB      3
-#define INDEX      5
+//#define INDEX      5
 #define MIDDLE     9
 //#define RING       10
 //#define PINKY      11 
